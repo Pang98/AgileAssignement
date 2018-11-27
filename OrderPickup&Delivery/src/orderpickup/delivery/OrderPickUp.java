@@ -29,12 +29,16 @@ public class OrderPickUp extends javax.swing.JFrame {
     private Connection con;
     private PreparedStatement pStmt_Update, pStmt_Select;
 
+
+    DefaultListModel<OrderList> listModel = new DefaultListModel<>();
+    private String sname, scontact;
+    private int orderid;
+
     public OrderPickUp() {
 
         initComponents();
 
         ResultSet rs = null;
-        DefaultListModel dlm = new DefaultListModel();
 
         try {
 
@@ -49,13 +53,20 @@ public class OrderPickUp extends javax.swing.JFrame {
             rs = pStmt_Select.executeQuery();
 
             while (rs.next()) {
-                dlm.addElement(rs.getString("orderid"));
+                orderid = Integer.parseInt(rs.getString("orderid"));
+                sname = rs.getString("customer");
+                scontact = rs.getString("contact");
+                OrderList ol = new OrderList(orderid, sname, scontact);
 
+                listModel.addElement(ol);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        jList1.setModel(dlm);
+        jList1.setModel(listModel);
+        
+        this.setTitle("Order pick up");
+
     }
 
     /**
@@ -78,6 +89,7 @@ public class OrderPickUp extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Pick Up List");
 
+        jList1.setToolTipText("");
         jScrollPane1.setViewportView(jList1);
 
         jButton1.setText("Order Picked up");
@@ -87,7 +99,7 @@ public class OrderPickUp extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Order List");
+        jLabel2.setText("Order Details");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,15 +110,15 @@ public class OrderPickUp extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
-                                .addComponent(jButton1))
-                            .addComponent(jLabel2)))
+                            .addComponent(jLabel2)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(143, 143, 143)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(107, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(128, 128, 128)
+                        .addComponent(jButton1)))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,10 +131,10 @@ public class OrderPickUp extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         pack();
@@ -131,38 +143,44 @@ public class OrderPickUp extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         ResultSet rs = null;
-        DefaultListModel dlm = new DefaultListModel();
         try {
             if (jList1.getSelectedValue() != null) {
                 int isConfirm = JOptionPane.showConfirmDialog(
-                                null,
-                                "Order "+jList1.getSelectedValue()+ " been picked up?",
-                                "Confirmation",
-                                JOptionPane.YES_NO_OPTION);
+                        null,
+                        "Order " + jList1.getSelectedValue().getName() + " been picked up?",
+                        "Confirmation",
+                        JOptionPane.YES_NO_OPTION);
                 if (isConfirm == JOptionPane.YES_OPTION) {
-                
-                pStmt_Update.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-                pStmt_Update.setString(2, jList1.getSelectedValue());
 
-                pStmt_Update.executeUpdate();
-                
-            
-            JOptionPane.showMessageDialog(null, "Order " + jList1.getSelectedValue() + " completed", "Completed", JOptionPane.INFORMATION_MESSAGE);
+                    pStmt_Update.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                    pStmt_Update.setInt(2, jList1.getSelectedValue().getId());
+
+                    pStmt_Update.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Order " + jList1.getSelectedValue().getName() + " completed", "Completed", JOptionPane.INFORMATION_MESSAGE);
+
+                    rs = pStmt_Select.executeQuery();
+
+                    listModel.clear();
+                    while (rs.next()) {
+                        orderid = Integer.parseInt(rs.getString("orderid"));
+                        sname = rs.getString("customer");
+                        scontact = rs.getString("contact");
+                        OrderList ol = new OrderList(orderid, sname, scontact);
+                        
+                        listModel.addElement(ol);
+                    }
+                    
+                    jList1.setModel(listModel);
 
                 }
-            }else
+            } else {
                 JOptionPane.showMessageDialog(null, "Please select an order.", "No order selected", JOptionPane.INFORMATION_MESSAGE);
-            rs = pStmt_Select.executeQuery();
-
-            while (rs.next()) {
-                dlm.addElement(rs.getString("orderid"));
-
             }
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
         }
-        jList1.setModel(dlm);
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -195,7 +213,10 @@ public class OrderPickUp extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OrderPickUp().setVisible(true);
+                OrderPickUp orderpu = new OrderPickUp();
+                orderpu.setVisible(true);
+                orderpu.setLocationRelativeTo(null);
+
             }
         });
     }
@@ -215,7 +236,7 @@ public class OrderPickUp extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JList<OrderList> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
