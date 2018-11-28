@@ -288,38 +288,34 @@ public class ViewOrder extends javax.swing.JFrame {
     
     private class combo2ListenerClass implements ActionListener {
 
-        @Override
         public void actionPerformed(ActionEvent e) {
-
-            ResultSet rs = null;
-
-            if (jComboBox1.getSelectedIndex() == 1) {
-            month = 1;
-        } else if (jComboBox1.getSelectedIndex() == 2) {
-            month = 2;
-        } else if (jComboBox1.getSelectedIndex() == 3) {
-            month = 3;
-        } else if (jComboBox1.getSelectedIndex() == 4) {
-            month = 4;
-        } else if (jComboBox1.getSelectedIndex() == 5) {
-            month = 5;
-        } else if (jComboBox1.getSelectedIndex() == 6) {
-            month = 6;
-        } else if (jComboBox1.getSelectedIndex() == 7) {
-            month = 7;
-        } else if (jComboBox1.getSelectedIndex() == 8) {
-            month = 8;
-        } else if (jComboBox1.getSelectedIndex() == 9) {
-            month = 9;
-        } else if (jComboBox1.getSelectedIndex() == 10) {
-            month = 10;
-        } else if (jComboBox1.getSelectedIndex() == 11) {
-            month = 11;
-        } else if (jComboBox1.getSelectedIndex() == 12) {
-            month = 12;
-        }
-
-        if (jComboBox2.getSelectedIndex() == 0) {
+            if (jComboBox1.getSelectedIndex() == 0) {
+                month = 1;
+            } else if (jComboBox1.getSelectedIndex() == 1) {
+                month = 2;
+            } else if (jComboBox1.getSelectedIndex() == 2) {
+                month = 3;
+            } else if (jComboBox1.getSelectedIndex() == 3) {
+                month = 4;
+            } else if (jComboBox1.getSelectedIndex() == 4) {
+                month = 5;
+            } else if (jComboBox1.getSelectedIndex() == 5) {
+                month = 6;
+            } else if (jComboBox1.getSelectedIndex() == 6) {
+                month = 7;
+            } else if (jComboBox1.getSelectedIndex() == 7) {
+                month = 8;
+            } else if (jComboBox1.getSelectedIndex() == 8) {
+                month = 9;
+            } else if (jComboBox1.getSelectedIndex() == 9) {
+                month = 10;
+            } else if (jComboBox1.getSelectedIndex() == 10) {
+                month = 11;
+            } else if (jComboBox1.getSelectedIndex() == 11) {
+                month = 12;
+            }
+            
+            if (jComboBox2.getSelectedIndex() == 0) {
             year = 2017;
         } else if (jComboBox2.getSelectedIndex() == 1) {
             year = 2018;
@@ -334,6 +330,9 @@ public class ViewOrder extends javax.swing.JFrame {
         } else if (jComboBox2.getSelectedIndex() == 6) {
             year = 2023;
         }
+
+            ResultSet rs = null;
+
             try {
 
                 initDbConnection();
