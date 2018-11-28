@@ -27,7 +27,7 @@ public class ViewOrder extends javax.swing.JFrame {
     /**
      * Creates new form ViewOrder
      */
-    private final String SQL_SELECT = "select orderid, customer, ordertime,orderType,pickuptime,status from Orders WHERE MONTH (ordertime)=?";
+    private final String SQL_SELECT = "select orderid, customer, ordertime,orderType,pickuptime,status from Orders WHERE MONTH (ordertime)=? AND YEAR (ordertime)=?";
 
     private Connection con;
     private PreparedStatement pStmt_Update, pStmt_Select;
@@ -35,73 +35,87 @@ public class ViewOrder extends javax.swing.JFrame {
 
     DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
     private String sname, otype, odate, pdate, status;
-    private int orderid, month;
+    private int orderid, month, year;
 
     public ViewOrder() {
         initComponents();
         jComboBox1.addActionListener(new comboListenerClass());
-        
+        jComboBox2.addActionListener(new combo2ListenerClass());
 
-                if (jComboBox1.getSelectedIndex() == 1) {
-                    month = 1;
-                } else if (jComboBox1.getSelectedIndex() == 2) {
-                    month = 2;
-                } else if (jComboBox1.getSelectedIndex() == 3) {
-                    month = 3;
-                } else if (jComboBox1.getSelectedIndex() == 4) {
-                    month = 4;
-                } else if (jComboBox1.getSelectedIndex() == 5) {
-                    month = 5;
-                } else if (jComboBox1.getSelectedIndex() == 6) {
-                    month = 6;
-                } else if (jComboBox1.getSelectedIndex() == 7) {
-                    month = 7;
-                } else if (jComboBox1.getSelectedIndex() == 8) {
-                    month = 8;
-                } else if (jComboBox1.getSelectedIndex() == 9) {
-                    month = 9;
-                } else if (jComboBox1.getSelectedIndex() == 10) {
-                    month = 10;
-                } else if (jComboBox1.getSelectedIndex() == 11) {
-                    month = 11;
-                } else if (jComboBox1.getSelectedIndex() == 12) {
-                    month = 12;
+        if (jComboBox1.getSelectedIndex() == 1) {
+            month = 1;
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            month = 2;
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            month = 3;
+        } else if (jComboBox1.getSelectedIndex() == 4) {
+            month = 4;
+        } else if (jComboBox1.getSelectedIndex() == 5) {
+            month = 5;
+        } else if (jComboBox1.getSelectedIndex() == 6) {
+            month = 6;
+        } else if (jComboBox1.getSelectedIndex() == 7) {
+            month = 7;
+        } else if (jComboBox1.getSelectedIndex() == 8) {
+            month = 8;
+        } else if (jComboBox1.getSelectedIndex() == 9) {
+            month = 9;
+        } else if (jComboBox1.getSelectedIndex() == 10) {
+            month = 10;
+        } else if (jComboBox1.getSelectedIndex() == 11) {
+            month = 11;
+        } else if (jComboBox1.getSelectedIndex() == 12) {
+            month = 12;
+        }
+
+        if (jComboBox2.getSelectedIndex() == 0) {
+            year = 2017;
+        } else if (jComboBox2.getSelectedIndex() == 1) {
+            year = 2018;
+        } else if (jComboBox2.getSelectedIndex() == 2) {
+            year = 2019;
+        } else if (jComboBox2.getSelectedIndex() == 3) {
+            year = 2020;
+        } else if (jComboBox2.getSelectedIndex() == 4) {
+            year = 2021;
+        } else if (jComboBox2.getSelectedIndex() == 5) {
+            year = 2022;
+        } else if (jComboBox2.getSelectedIndex() == 6) {
+            year = 2023;
+        }
+
+        ResultSet rs = null;
+
+        try {
+
+            initDbConnection();
+            initPrepareStatement();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+
+        Object[] columns = new Object[]{orderid, sname, otype, odate, pdate, status};
+        try {
+            pStmt_Select.setInt(1, month);
+            pStmt_Select.setInt(2,year);
+            rs = pStmt_Select.executeQuery();
+
+            while (rs.next()) {
+
+                Object[] objects = new Object[6];
+                for (int i = 0; i < 6; i++) {
+                    objects[i] = rs.getObject(i + 1);
                 }
-
-                ResultSet rs = null;
-
-                try {
-
-                    initDbConnection();
-                    initPrepareStatement();
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                }
-
-                Object[] columns = new Object[]{orderid, sname, otype, odate, pdate, status};
-                try {
-                    pStmt_Select.setInt(1, month);
-                    rs = pStmt_Select.executeQuery();
-
-                    while (rs.next()) {
-
-                        Object[] objects = new Object[6];
-                        for (int i = 0; i < 6; i++) {
-                            objects[i] = rs.getObject(i + 1);
-                        }
-                        tableModel.addRow(objects);
+                tableModel.addRow(objects);
 
 //                tableModel.addRow(columns);
-                    }
-                    jTable1.removeAll();
-                    jTable1.setModel(tableModel);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-
-                
-            
+            }
+            jTable1.removeAll();
+            jTable1.setModel(tableModel);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
 
         this.setTitle("Orders for the month");
         this.setLocationRelativeTo(null);
@@ -150,12 +164,13 @@ public class ViewOrder extends javax.swing.JFrame {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jComboBox2 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -192,43 +207,49 @@ public class ViewOrder extends javax.swing.JFrame {
             }
         });
 
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2017", "2018", "2019", "2020", "2021", "2022" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 834, Short.MAX_VALUE)
+                .addComponent(jScrollPane1)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(309, 309, 309)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(36, 36, 36)
+                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(368, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
         // TODO add your handling code here:
 
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }                                          
 
-    private void jComboBox1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jComboBox1PropertyChange
+    private void jComboBox1PropertyChange(java.beans.PropertyChangeEvent evt) {                                          
         // TODO add your handling code here:
 
 
-    }//GEN-LAST:event_jComboBox1PropertyChange
+    }                                         
 
     /**
      * @param args the command line arguments
@@ -265,75 +286,179 @@ public class ViewOrder extends javax.swing.JFrame {
         });
     }
     
+    private class combo2ListenerClass implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            ResultSet rs = null;
+
+            if (jComboBox1.getSelectedIndex() == 1) {
+            month = 1;
+        } else if (jComboBox1.getSelectedIndex() == 2) {
+            month = 2;
+        } else if (jComboBox1.getSelectedIndex() == 3) {
+            month = 3;
+        } else if (jComboBox1.getSelectedIndex() == 4) {
+            month = 4;
+        } else if (jComboBox1.getSelectedIndex() == 5) {
+            month = 5;
+        } else if (jComboBox1.getSelectedIndex() == 6) {
+            month = 6;
+        } else if (jComboBox1.getSelectedIndex() == 7) {
+            month = 7;
+        } else if (jComboBox1.getSelectedIndex() == 8) {
+            month = 8;
+        } else if (jComboBox1.getSelectedIndex() == 9) {
+            month = 9;
+        } else if (jComboBox1.getSelectedIndex() == 10) {
+            month = 10;
+        } else if (jComboBox1.getSelectedIndex() == 11) {
+            month = 11;
+        } else if (jComboBox1.getSelectedIndex() == 12) {
+            month = 12;
+        }
+
+        if (jComboBox2.getSelectedIndex() == 0) {
+            year = 2017;
+        } else if (jComboBox2.getSelectedIndex() == 1) {
+            year = 2018;
+        } else if (jComboBox2.getSelectedIndex() == 2) {
+            year = 2019;
+        } else if (jComboBox2.getSelectedIndex() == 3) {
+            year = 2020;
+        } else if (jComboBox2.getSelectedIndex() == 4) {
+            year = 2021;
+        } else if (jComboBox2.getSelectedIndex() == 5) {
+            year = 2022;
+        } else if (jComboBox2.getSelectedIndex() == 6) {
+            year = 2023;
+        }
+            try {
+
+                initDbConnection();
+                initPrepareStatement();
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+
+            Object[] columns = new Object[]{orderid, sname, otype, odate, pdate, status};
+            tableModel.setRowCount(0);
+            try {
+                pStmt_Select.setInt(1, month);
+                pStmt_Select.setInt(2, year);
+                rs = pStmt_Select.executeQuery();
+
+                while (rs.next()) {
+
+                    Object[] objects = new Object[6];
+                    for (int i = 0; i < 6; i++) {
+                        objects[i] = rs.getObject(i + 1);
+                    }
+                    tableModel.addRow(objects);
+
+                }
+
+                jTable1.setModel(tableModel);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+
+        }
+    }
+
     private class comboListenerClass implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             if (jComboBox1.getSelectedIndex() == 0) {
-                    month = 1;
-                } else if (jComboBox1.getSelectedIndex() == 1) {
-                    month = 2;
-                } else if (jComboBox1.getSelectedIndex() == 2) {
-                    month = 3;
-                } else if (jComboBox1.getSelectedIndex() == 3) {
-                    month = 4;
-                } else if (jComboBox1.getSelectedIndex() == 4) {
-                    month = 5;
-                } else if (jComboBox1.getSelectedIndex() == 5) {
-                    month = 6;
-                } else if (jComboBox1.getSelectedIndex() == 6) {
-                    month = 7;
-                } else if (jComboBox1.getSelectedIndex() == 7) {
-                    month = 8;
-                } else if (jComboBox1.getSelectedIndex() == 8) {
-                    month = 9;
-                } else if (jComboBox1.getSelectedIndex() == 9) {
-                    month = 10;
-                } else if (jComboBox1.getSelectedIndex() == 10) {
-                    month = 11;
-                } else if (jComboBox1.getSelectedIndex() == 11) {
-                    month = 12;
-                }
+                month = 1;
+            } else if (jComboBox1.getSelectedIndex() == 1) {
+                month = 2;
+            } else if (jComboBox1.getSelectedIndex() == 2) {
+                month = 3;
+            } else if (jComboBox1.getSelectedIndex() == 3) {
+                month = 4;
+            } else if (jComboBox1.getSelectedIndex() == 4) {
+                month = 5;
+            } else if (jComboBox1.getSelectedIndex() == 5) {
+                month = 6;
+            } else if (jComboBox1.getSelectedIndex() == 6) {
+                month = 7;
+            } else if (jComboBox1.getSelectedIndex() == 7) {
+                month = 8;
+            } else if (jComboBox1.getSelectedIndex() == 8) {
+                month = 9;
+            } else if (jComboBox1.getSelectedIndex() == 9) {
+                month = 10;
+            } else if (jComboBox1.getSelectedIndex() == 10) {
+                month = 11;
+            } else if (jComboBox1.getSelectedIndex() == 11) {
+                month = 12;
+            }
+            
+            if (jComboBox2.getSelectedIndex() == 0) {
+            year = 2017;
+        } else if (jComboBox2.getSelectedIndex() == 1) {
+            year = 2018;
+        } else if (jComboBox2.getSelectedIndex() == 2) {
+            year = 2019;
+        } else if (jComboBox2.getSelectedIndex() == 3) {
+            year = 2020;
+        } else if (jComboBox2.getSelectedIndex() == 4) {
+            year = 2021;
+        } else if (jComboBox2.getSelectedIndex() == 5) {
+            year = 2022;
+        } else if (jComboBox2.getSelectedIndex() == 6) {
+            year = 2023;
+        }
 
-                ResultSet rs = null;
+            ResultSet rs = null;
 
-                try {
+            try {
 
-                    initDbConnection();
-                    initPrepareStatement();
+                initDbConnection();
+                initPrepareStatement();
 
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
 
-                Object[] columns = new Object[]{orderid, sname, otype, odate, pdate, status};
-                tableModel.setRowCount(0);
-                try {
-                    pStmt_Select.setInt(1, month);
-                    rs = pStmt_Select.executeQuery();
+            Object[] columns = new Object[]{orderid, sname, otype, odate, pdate, status};
+            tableModel.setRowCount(0);
+            try {
+                pStmt_Select.setInt(1, month);
+                pStmt_Select.setInt(2, year);
+                rs = pStmt_Select.executeQuery();
 
-                    while (rs.next()) {
+                while (rs.next()) {
 
-                        Object[] objects = new Object[6];
-                        for (int i = 0; i < 6; i++) {
-                            objects[i] = rs.getObject(i + 1);
-                        }
-                        tableModel.addRow(objects);
-
+                    Object[] objects = new Object[6];
+                    for (int i = 0; i < 6; i++) {
+                        objects[i] = rs.getObject(i + 1);
                     }
-                    
-                    jTable1.setModel(tableModel);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    tableModel.addRow(objects);
+
                 }
+
+                jTable1.setModel(tableModel);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
 
         }
 
-        
     }
+    
+    
+    
+    
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
