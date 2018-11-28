@@ -5,7 +5,7 @@
  */
 package customflowerarrangement;
 
-import javax.swing.JButton;
+
 
 /**
  *
@@ -13,7 +13,7 @@ import javax.swing.JButton;
  */
 public class CustomFlowerArrangement  {
 
-    private JButton btnReset = new JButton("Reset");
+    
 
     
 }
