@@ -80,7 +80,7 @@
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="42" max="32767" attributes="0"/>
+              <EmptySpace pref="56" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -587,7 +587,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="paymentBtn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Payment"/>
+        <Property name="text" type="java.lang.String" value="Pay"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="paymentBtnActionPerformed"/>

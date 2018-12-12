@@ -1,4 +1,6 @@
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,31 +9,39 @@ import java.sql.SQLException;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-
+import javax.swing.JRadioButton;
 
 public class JFrame extends javax.swing.JFrame {
 
-    private final String SQL_INSERT = "INSERT INTO CUSTOM VALUES (?,?,?,?,?,?,?)";
+    private final String SQL_INSERT = "INSERT INTO CUSTOM VALUES (?,?,?,?,?,?)";
     private ButtonGroup BGCustomStyle = new ButtonGroup();
     private ButtonGroup BGCustomSize = new ButtonGroup();
     private ButtonGroup BGCustomFlower = new ButtonGroup();
     private ButtonGroup BGCustomAccer = new ButtonGroup();
     private ButtonGroup BGCustomPickup = new ButtonGroup();
-    
+
     private String[] CustomStyle = {"Traditional", "Modern", "Bouquets"};
+    private JRadioButton[] CBCustomStyle = new JRadioButton[CustomStyle.length];
     private String[] CustomSize = {"Small", "Medium", "Big"};
+    private JRadioButton[] CBCustomSize = new JRadioButton[CustomSize.length];
     private String[] CustomFlower = {"Rose", "SunFlower", "Daisy"};
+    private JRadioButton[] CBCustomFlower = new JRadioButton[CustomFlower.length];
     private String[] CustomAccer = {"Ribbon", "Teddy", "Balloon"};
+    private JRadioButton[] CBCustomAccer = new JRadioButton[CustomAccer.length];
     private String[] CustomPickup = {"Express", "Standard", "Flexi"};
-    
+    private JRadioButton[] CBCustomPickup = new JRadioButton[CustomPickup.length];
+
     private JButton btnConfirm = new JButton("Confirm");
     private JButton btnReset = new JButton("Reset");
-    
+
     private Connection con;
-    private PreparedStatement pStmt_Insert;  
-    
-    ResultSet rs;    
-    
+    private PreparedStatement pStmt_Insert, pStmt;
+    String root = "C000";
+    int root2 = 3;
+    String digit = Integer.toString(root2);
+    String fullID = root + digit;
+    ResultSet rs;
+
     public JFrame() {
         initComponents();
         try {
@@ -39,10 +49,57 @@ public class JFrame extends javax.swing.JFrame {
             initPrepareStatement();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-        }        
+        }
+    }
+    private void getID() {
+    
+        if (selectRecord() != null) {
+
+            char[] ch = selectRecord().toCharArray();
+
+            String s1 = Character.toString(ch[4]);
+            String s2 = Character.toString(ch[3]);
+            String s3 = Character.toString(ch[2]);
+            String s4 = Character.toString(ch[1]);
+            String st = s4 + s3 + s2 + s1;
+            int count = Integer.parseInt(st);
+
+            root = "";
+            count++;
+
+            if (count >= 10) {
+                root = "C00";
+            } else if (count >= 100) {
+                root = "C0";
+            } else if (count >= 1000) {
+                root = "C";
+            } else {
+                root = "S000";
+            }
+
+            String digit = Integer.toString(count);
+            fullID = root + digit;
+        }
+        
         
     }
+    private String selectRecord() {
+        ResultSet rs = null;
+        String fullID = null;
 
+        try {
+            rs = pStmt.executeQuery();
+            if (rs.next()) {
+                fullID = rs.getString("CUSTOMID");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+              return fullID;
+        }
+      
+        
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -404,7 +461,7 @@ public class JFrame extends javax.swing.JFrame {
             }
         });
 
-        paymentBtn.setText("Payment");
+        paymentBtn.setText("Pay");
         paymentBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paymentBtnActionPerformed(evt);
@@ -456,7 +513,7 @@ public class JFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(210, 210, 210)
                         .addComponent(jLabel1)))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -500,92 +557,109 @@ public class JFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void traditionalRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_traditionalRadActionPerformed
-        if (traditionalRad.isSelected())
-        bouquetsRad.setSelected(false);
-        modernRad.setSelected(false);
+
+        if (traditionalRad.isSelected()) {
+            bouquetsRad.setSelected(false);
+            modernRad.setSelected(false);
+
+        }
     }//GEN-LAST:event_traditionalRadActionPerformed
 
     private void modernRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modernRadActionPerformed
-        if (modernRad.isSelected())
-        bouquetsRad.setSelected(false);
+        if (modernRad.isSelected()) {
+            bouquetsRad.setSelected(false);
+        }
         traditionalRad.setSelected(false);
     }//GEN-LAST:event_modernRadActionPerformed
 
     private void bouquetsRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bouquetsRadActionPerformed
-        if (bouquetsRad.isSelected())
-        modernRad.setSelected(false);
+        if (bouquetsRad.isSelected()) {
+            modernRad.setSelected(false);
+        }
         traditionalRad.setSelected(false);
     }//GEN-LAST:event_bouquetsRadActionPerformed
 
     private void smallRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smallRadActionPerformed
-        if (smallRad.isSelected())
-        mediumRad.setSelected(false);
+        if (smallRad.isSelected()) {
+            mediumRad.setSelected(false);
+        }
         bigRad.setSelected(false);
     }//GEN-LAST:event_smallRadActionPerformed
 
     private void mediumRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mediumRadActionPerformed
-        if (mediumRad.isSelected())
-        smallRad.setSelected(false);
+        if (mediumRad.isSelected()) {
+            smallRad.setSelected(false);
+        }
         bigRad.setSelected(false);
     }//GEN-LAST:event_mediumRadActionPerformed
 
     private void bigRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bigRadActionPerformed
-        if (bigRad.isSelected())
-        smallRad.setSelected(false);
+        if (bigRad.isSelected()) {
+            smallRad.setSelected(false);
+        }
         mediumRad.setSelected(false);
     }//GEN-LAST:event_bigRadActionPerformed
 
     private void roseRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roseRadActionPerformed
-        if (roseRad.isSelected())
-        sunflowerRad.setSelected(false);
+        if (roseRad.isSelected()) {
+            sunflowerRad.setSelected(false);
+        }
         daisyRad.setSelected(false);
     }//GEN-LAST:event_roseRadActionPerformed
 
     private void sunflowerRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sunflowerRadActionPerformed
-        if (sunflowerRad.isSelected())
-        daisyRad.setSelected(false);
+        if (sunflowerRad.isSelected()) {
+            daisyRad.setSelected(false);
+        }
         roseRad.setSelected(false);
     }//GEN-LAST:event_sunflowerRadActionPerformed
 
     private void daisyRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_daisyRadActionPerformed
-        if (daisyRad.isSelected())
-        roseRad.setSelected(false);
+        if (daisyRad.isSelected()) {
+            roseRad.setSelected(false);
+        }
         sunflowerRad.setSelected(false);
     }//GEN-LAST:event_daisyRadActionPerformed
 
     private void ribbonRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ribbonRadActionPerformed
-        if (ribbonRad.isSelected())
-        teddyRad.setSelected(false);
+        if (ribbonRad.isSelected()) {
+            teddyRad.setSelected(false);
+        }
         balloonRad.setSelected(false);
     }//GEN-LAST:event_ribbonRadActionPerformed
 
     private void teddyRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teddyRadActionPerformed
-        if (teddyRad.isSelected())
-        ribbonRad.setSelected(false);
+        if (teddyRad.isSelected()) {
+            ribbonRad.setSelected(false);
+        }
         balloonRad.setSelected(false);
     }//GEN-LAST:event_teddyRadActionPerformed
 
     private void balloonRadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balloonRadActionPerformed
-        if (balloonRad.isSelected())
-        ribbonRad.setSelected(false);
+        if (balloonRad.isSelected()) {
+            ribbonRad.setSelected(false);
+        }
         teddyRad.setSelected(false);
     }//GEN-LAST:event_balloonRadActionPerformed
 
     private void standardChkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standardChkActionPerformed
-        if (standardChk.isSelected())
-        flexiChk.setSelected(false);
+        if (standardChk.isSelected()) {
+            flexiChk.setSelected(false);
+        }
         expressChk.setSelected(false);
     }//GEN-LAST:event_standardChkActionPerformed
 
     private void flexiChkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flexiChkActionPerformed
-        if (flexiChk.isSelected())
-        standardChk.setSelected(false);
+        if (flexiChk.isSelected()) {
+            standardChk.setSelected(false);
+        }
         expressChk.setSelected(false);
     }//GEN-LAST:event_flexiChkActionPerformed
 
     private void expressChkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expressChkActionPerformed
-        if (expressChk.isSelected())
-        standardChk.setSelected(false);
+        if (expressChk.isSelected()) {
+            standardChk.setSelected(false);
+        }
         flexiChk.setSelected(false);
     }//GEN-LAST:event_expressChkActionPerformed
 
@@ -597,7 +671,7 @@ public class JFrame extends javax.swing.JFrame {
         traditionalRad.setSelected(false);
         modernRad.setSelected(false);
         bouquetsRad.setSelected(false);
-     
+
         smallRad.setSelected(false);
         mediumRad.setSelected(false);
         bigRad.setSelected(false);
@@ -605,11 +679,11 @@ public class JFrame extends javax.swing.JFrame {
         roseRad.setSelected(false);
         sunflowerRad.setSelected(false);
         daisyRad.setSelected(false);
-        
+
         teddyRad.setSelected(false);
         ribbonRad.setSelected(false);
         balloonRad.setSelected(false);
-        
+
         standardChk.setSelected(false);
         expressChk.setSelected(false);
         flexiChk.setSelected(false);
@@ -623,9 +697,156 @@ public class JFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_totalpriceTFActionPerformed
 
+     
+
+    
     private void paymentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentBtnActionPerformed
+
+        StringBuilder sb = new StringBuilder();
+        String customStyle = null;
+        String customSize = null;
+        String customFlower = null;
+        String customAccer = null;
+        String customPickup = null;
+
+        sb.append("Custom Style : ");
+        if (traditionalRad.isSelected()) {
+            sb.append(CustomStyle[0]);
+            customStyle = CustomStyle[0];
+
+            sb.append("\n");
+        } else if (modernRad.isSelected()) {
+            sb.append(CustomStyle[1]);
+            customStyle = CustomStyle[1];
+
+            sb.append("\n");
+        } else if (bouquetsRad.isSelected()) {
+            sb.append(CustomStyle[2]);
+            customStyle = CustomStyle[2];
+
+            sb.append("\n");
+
+        }
+
+        sb.append("Flower Size : ");
+        if (smallRad.isSelected()) {
+            sb.append(CustomSize[0]);
+            customSize = CustomSize[0];
+
+            sb.append("\n");
+        } else if (mediumRad.isSelected()) {
+            sb.append(CustomSize[1]);
+            customSize = CustomSize[1];
+
+            sb.append("\n");
+        } else if (bigRad.isSelected()) {
+            sb.append(CustomSize[2]);
+            customSize = CustomSize[2];
+
+            sb.append("\n");
+
+        }
+
+        sb.append("Flower : ");
+        if (roseRad.isSelected()) {
+            sb.append(CustomFlower[0]);
+            customFlower = CustomFlower[0];
+
+            sb.append("\n");
+        }
+        if (sunflowerRad.isSelected()) {
+
+            sb.append(CustomFlower[1]);
+            customFlower = CustomFlower[1];
+
+            sb.append("\n");
+        }
+        if (daisyRad.isSelected()) {
+            sb.append(CustomFlower[2]);
+            customFlower = CustomFlower[2];
+
+            sb.append("\n");
+
+        }
+
+        sb.append("Accessories : ");
+        if (ribbonRad.isSelected()) {
+            sb.append(CustomAccer[0]);
+            customAccer = CustomAccer[0];
+            sb.append("\n");
+        }
+
+        if (teddyRad.isSelected()) {
+            sb.append(CustomAccer[1]);
+            customAccer = CustomAccer[1];
+            sb.append("\n");
+        }
+
+        if (balloonRad.isSelected()) {
+            sb.append(CustomAccer[2]);
+            customAccer = CustomAccer[2];
+            sb.append("\n");
+        }
+
+        sb.append("Pick-up Priority : ");
+        if (expressChk.isSelected()) {
+            sb.append(CustomPickup[0]);
+            customPickup = CustomPickup[0];
+
+            sb.append("\n");
+        }
+        if (standardChk.isSelected()) {
+            sb.append(CustomPickup[1]);
+            customPickup = CustomPickup[1];
+
+            sb.append("\n");
+        }
+        if (flexiChk.isSelected()) {
+            sb.append(CustomPickup[2]);
+            customPickup = CustomPickup[2];
+
+            sb.append("\n");
+
+        }
         
+
+
+
+        sb.append("\n\nClick Yes To Continue:");
+
+        int isConfirm = JOptionPane.showConfirmDialog(
+                null,
+                sb.toString(),
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        if (isConfirm == JOptionPane.YES_OPTION) {
+
+            try {
+
+                pStmt_Insert.setString(1, fullID);
+                pStmt_Insert.setString(2, customStyle);
+                pStmt_Insert.setString(3, customSize);
+                pStmt_Insert.setString(4, customFlower);
+                pStmt_Insert.setString(5, customAccer);
+                pStmt_Insert.setString(6, customPickup);
+                
+
+                pStmt_Insert.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "New Customize Record Had Been Added To The Database!");
+
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Please Select your choice!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }//GEN-LAST:event_paymentBtnActionPerformed
+
 
     private void calculateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calculateBtnActionPerformed
         double total;
@@ -634,74 +855,69 @@ public class JFrame extends javax.swing.JFrame {
         double standard = 5.50;
         double flexi = 2.50;
         double blank = 0.00;
-        //double deliveryfee;
-
         
-        if(traditionalRad.isSelected()){
+
+        if (traditionalRad.isSelected()) {
             subtotal = subtotal + 10.00;
-        }else if (modernRad.isSelected()){
+        } else if (modernRad.isSelected()) {
             subtotal = subtotal + 15.00;
-        }else if (bouquetsRad.isSelected()){
+        } else if (bouquetsRad.isSelected()) {
             subtotal = subtotal + 20.00;
         }
 
-        if(smallRad.isSelected()){
+        if (smallRad.isSelected()) {
             subtotal = subtotal + 10.00;
-        }else if (mediumRad.isSelected()){
+        } else if (mediumRad.isSelected()) {
             subtotal = subtotal + 15.00;
-        }else if (bigRad.isSelected()){
+        } else if (bigRad.isSelected()) {
             subtotal = subtotal + 20.00;
-        } 
-        
-        if(roseRad.isSelected()){
+        }
+
+        if (roseRad.isSelected()) {
             subtotal = subtotal + 30.00;
-        }else if (sunflowerRad.isSelected()){
+        } else if (sunflowerRad.isSelected()) {
             subtotal = subtotal + 25.00;
-        }else if (daisyRad.isSelected()){
+        } else if (daisyRad.isSelected()) {
             subtotal = subtotal + 20.00;
-        } 
-        
-        if(ribbonRad.isSelected()){
+        }
+
+        if (ribbonRad.isSelected()) {
             subtotal = subtotal + 5.00;
-        }else if (teddyRad.isSelected()){
+        } else if (teddyRad.isSelected()) {
             subtotal = subtotal + 15.00;
-        }else if (balloonRad.isSelected()){
+        } else if (balloonRad.isSelected()) {
             subtotal = subtotal + 6.00;
         }
-        
-        
-        if(expressChk.isSelected()){
+
+        if (expressChk.isSelected()) {
             deliveryfeeTF.setText(Double.toString(express));
             totalflowerpriceTF.setText(Double.toString(subtotal));
             subtotal = Double.parseDouble(totalflowerpriceTF.getText());
             total = subtotal + 10.50;
             totalpriceTF.setText(Double.toString(total));
-        }
-        else if(standardChk.isSelected()){
+        } else if (standardChk.isSelected()) {
             deliveryfeeTF.setText(Double.toString(standard));
             totalflowerpriceTF.setText(Double.toString(subtotal));
             subtotal = Double.parseDouble(totalflowerpriceTF.getText());
             total = subtotal + 5.50;
             totalpriceTF.setText(Double.toString(total));
-            
-        }
-        else if(flexiChk.isSelected()){  
+
+        } else if (flexiChk.isSelected()) {
             deliveryfeeTF.setText(Double.toString(flexi));
             totalflowerpriceTF.setText(Double.toString(subtotal));
             subtotal = Double.parseDouble(totalflowerpriceTF.getText());
             total = subtotal + 2.50;
             totalpriceTF.setText(Double.toString(total));
-        }
-        else{
+        } else {
             deliveryfeeTF.setText(Double.toString(blank));
             totalflowerpriceTF.setText(Double.toString(subtotal));
             subtotal = Double.parseDouble(totalflowerpriceTF.getText());
             total = subtotal + 0.0;
-            totalpriceTF.setText(Double.toString(total));            
+            totalpriceTF.setText(Double.toString(total));
         }
-        
+
     }//GEN-LAST:event_calculateBtnActionPerformed
-    
+
     /**
      * @param args the command line arguments
      */
@@ -780,9 +996,14 @@ public class JFrame extends javax.swing.JFrame {
     }
 
     private void initPrepareStatement() throws SQLException {
-        pStmt_Insert = con.prepareStatement(SQL_INSERT);       
-        
+        pStmt_Insert = con.prepareStatement(SQL_INSERT);
+
     }
 
+    public interface DBConnection {
+
+        public Connection getConnection() throws SQLException;
+
+    }
 
 }
